@@ -1,0 +1,25 @@
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20rpx; }
+
+.branch-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22rpx 0; border-bottom: 1rpx solid #f0f0f0;
+}
+.branch-item:last-child { border-bottom: none; }
+
+.branch-name { font-size: 30rpx; margin-bottom: 6rpx; }
+.branch-leader { margin-top: 4rpx; }
+
+.branch-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8rpx; }
+.mt4 { margin-top: 4rpx; }
+
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: flex-end; z-index: 100;
+}
+.modal-box {
+  width: 100%; background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 32rpx 28rpx 48rpx;
+}
+.modal-title { font-size: 32rpx; font-weight: 700; color: #222; margin-bottom: 24rpx; text-align: center; }
+.modal-footer { display: flex; gap: 20rpx; margin-top: 24rpx; }

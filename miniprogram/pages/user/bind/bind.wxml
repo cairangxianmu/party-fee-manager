@@ -1,0 +1,43 @@
+<view class="page">
+  <view class="hero">
+    <image class="hero-emblem" src="/images/party-emblem.png" mode="aspectFit"></image>
+    <view class="hero-title">党员身份绑定</view>
+    <view class="hero-sub">首次使用需绑定您的党员信息</view>
+  </view>
+
+  <view class="form-card" wx:if="{{!loginLoading}}">
+    <view class="tip">请输入您的<text class="text-red">工号 / 学号</text>和<text class="text-red">手机号</text>进行身份验证。</view>
+
+    <view class="form-item">
+      <view class="form-label required">工号 / 学号</view>
+      <input class="form-input" value="{{memberNo}}" placeholder="请输入工号或学号"
+             bindinput="onMemberNoInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">手机号</view>
+      <input class="form-input" value="{{phone}}" placeholder="请输入登记的手机号"
+             type="number" maxlength="11" bindinput="onPhoneInput" />
+    </view>
+
+    <view class="openid-tip text-gray text-sm" wx:if="{{openid}}">
+      已获取微信身份 ✓
+    </view>
+
+    <button class="btn btn-primary bind-btn"
+            bindtap="onBind" disabled="{{loading}}" loading="{{loading}}">
+      {{loading ? '绑定中…' : '确认绑定'}}
+    </button>
+  </view>
+
+  <view wx:else class="loading-area">
+    <view class="loading-text text-gray">正在获取微信身份…</view>
+  </view>
+
+  <view class="notice">
+    <view class="notice-title">📌 注意事项</view>
+    <view class="notice-item">· 每个微信只能绑定一名党员</view>
+    <view class="notice-item">· 每名党员只能被一个微信绑定</view>
+    <view class="notice-item">· 绑定后如需解绑请联系支部管理员</view>
+  </view>
+</view>

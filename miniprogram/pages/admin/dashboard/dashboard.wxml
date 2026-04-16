@@ -1,0 +1,208 @@
+<view class="container">
+  <!-- 顶部信息栏 -->
+  <view class="page-header">
+    <view class="page-header-title">缴费看板</view>
+    <view class="page-header-sub">
+      {{isSuper ? '超级管理员（全院）' : ('支部管理员 · ' + branchName)}} · {{username}}
+    </view>
+  </view>
+
+  <!-- 快捷导航（超级管理员） -->
+  <view wx:if="{{isSuper}}" class="nav-row card">
+    <view class="nav-item" bindtap="goMembers">
+      <view class="nav-icon">👥</view>
+      <view class="nav-label">成员管理</view>
+    </view>
+    <view class="nav-item" bindtap="goPeriods">
+      <view class="nav-icon">📅</view>
+      <view class="nav-label">期数管理</view>
+    </view>
+    <view class="nav-item" bindtap="goBranches">
+      <view class="nav-icon">🏛️</view>
+      <view class="nav-label">支部管理</view>
+    </view>
+    <view class="nav-item" bindtap="goAdmins">
+      <view class="nav-icon">🛡️</view>
+      <view class="nav-label">账号管理</view>
+    </view>
+    <view class="nav-item" bindtap="goPhoneRequests">
+      <view class="nav-icon">📱</view>
+      <view class="nav-label">
+        信息审核
+        <text wx:if="{{pendingPhoneReq > 0}}" class="nav-badge">{{pendingPhoneReq}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 普通管理员导航 -->
+  <view wx:else class="nav-row card">
+    <view class="nav-item" bindtap="goMembers">
+      <view class="nav-icon">👥</view>
+      <view class="nav-label">成员管理</view>
+    </view>
+    <view class="nav-item" bindtap="goPhoneRequests">
+      <view class="nav-icon">📱</view>
+      <view class="nav-label">
+        信息审核
+        <text wx:if="{{pendingPhoneReq > 0}}" class="nav-badge">{{pendingPhoneReq}}</text>
+      </view>
+    </view>
+    <view class="nav-item" bindtap="onLogout">
+      <view class="nav-icon">🚪</view>
+      <view class="nav-label">退出登录</view>
+    </view>
+  </view>
+
+  <!-- 筛选区 -->
+  <view class="card filter-row">
+    <view class="filter-item" bindtap="onShowPeriodSheet">
+      <text class="filter-label">期数</text>
+      <view class="picker-box {{periods.length === 0 ? 'picker-box-disabled' : ''}}">
+        {{checkedPeriodCount > 0 ? selectedPeriodName : (loading ? '加载中…' : '全部期数')}}
+        <text class="picker-arrow">▾</text>
+      </view>
+    </view>
+    <view wx:if="{{isSuper}}" class="filter-item" bindtap="onShowBranchSheet">
+      <text class="filter-label">支部</text>
+      <view class="picker-box">
+        {{checkedBranchCount > 0 ? '已选' + checkedBranchCount + '个' : '全部支部'}}
+        <text class="picker-arrow">▾</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计数字 -->
+  <view class="stat-row">
+    <view class="stat-card">
+      <view class="stat-num">{{displayStat.total}}</view>
+      <view class="stat-label">总人数</view>
+    </view>
+    <view class="stat-card">
+      <view class="stat-num text-green">{{displayStat.paid}}</view>
+      <view class="stat-label">已缴</view>
+    </view>
+    <view class="stat-card">
+      <view class="stat-num text-red">{{displayStat.unpaid}}</view>
+      <view class="stat-label">未缴</view>
+    </view>
+    <view class="stat-card">
+      <view class="stat-num">{{displayStat.amount}}</view>
+      <view class="stat-label">已收(元)</view>
+    </view>
+  </view>
+
+  <!-- 缴费比例饼图 -->
+  <view class="card chart-card" wx:if="{{branchStats.length > 0}}">
+    <view class="chart-title">缴费比例</view>
+    <canvas type="2d" id="branchPieChart" class="donut-canvas"></canvas>
+    <view class="donut-legend-badges">
+      <view class="legend-badge"><view class="legend-dot-paid"></view><text class="legend-text">已缴</text></view>
+      <view class="legend-badge"><view class="legend-dot-unpaid"></view><text class="legend-text">未缴</text></view>
+    </view>
+    <view class="donut-legend-list">
+      <view class="donut-legend-item" wx:for="{{branchStats}}" wx:key="id">
+        <text class="dli-name">{{item.name}}</text>
+        <view class="dli-bar-wrap">
+          <view class="dli-bar" style="width:{{item.rate}}%"></view>
+        </view>
+        <text class="dli-stat">{{item.paid}}/{{item.total}} · {{item.rate}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮行 -->
+  <view class="action-row">
+    <button wx:if="{{isSuper}}" class="btn btn-primary btn-sm action-btn" bindtap="onConfirmAll">一键确认到账</button>
+    <button class="btn btn-default btn-sm action-btn" bindtap="exportExcel">导出 Excel</button>
+  </view>
+
+  <!-- 名单筛选 -->
+  <view class="list-header">
+    <view class="list-title">缴费名单</view>
+    <view class="status-tabs">
+      <view class="status-tab {{statusFilter === 'all' ? 'tab-active' : ''}}"
+            data-val="all" bindtap="onStatusFilter">全部({{displayStat.total}})</view>
+      <view class="status-tab {{statusFilter === 'paid' ? 'tab-active' : ''}}"
+            data-val="paid" bindtap="onStatusFilter">已缴({{displayStat.paid}})</view>
+      <view class="status-tab {{statusFilter === 'unpaid' ? 'tab-active' : ''}}"
+            data-val="unpaid" bindtap="onStatusFilter">未缴({{displayStat.unpaid}})</view>
+    </view>
+  </view>
+
+  <!-- 明细列表 -->
+  <view class="card" wx:if="{{filteredDetails.length > 0}}">
+    <view class="detail-item" wx:for="{{filteredDetails}}" wx:key="payment_id">
+      <view class="detail-left">
+        <view class="detail-name">{{item.name}}</view>
+        <view class="detail-meta">{{item.member_no}} · {{item.identity}}</view>
+        <view wx:if="{{isSuper}}" class="detail-branch text-gray text-sm">{{item.branch_name}}</view>
+      </view>
+      <view class="detail-right">
+        <view class="detail-amount">¥{{item.amount_fmt}}</view>
+        <view class="tag {{item.paid ? 'tag-paid' : 'tag-unpaid'}}">
+          {{item.paid ? '已缴' : '未缴'}}
+        </view>
+        <button class="btn btn-sm {{item.paid ? 'btn-danger' : 'btn-primary'}} mt8"
+                data-id="{{item.payment_id}}" data-paid="{{item.paid}}"
+                bindtap="onConfirm">
+          {{item.paid ? '撤销' : '确认'}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{details.length === 0}}" class="empty">
+    <view class="empty-icon">📋</view>
+    <text>暂无数据，请先创建期数</text>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">🔍</view>
+    <text>当前筛选无匹配数据</text>
+  </view>
+
+  <!-- 底部退出（超级管理员） -->
+  <view wx:if="{{isSuper}}" style="margin-top:32rpx;">
+    <button class="btn btn-default" bindtap="onLogout">退出登录</button>
+  </view>
+
+  <!-- 期数多选弹窗 -->
+  <view wx:if="{{showPeriodSheet}}" class="modal-mask" bindtap="onClosePeriodSheet">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">选择期数（可多选）</view>
+      <scroll-view scroll-y style="max-height:50vh;">
+        <view class="branch-check-item" wx:for="{{periodCheckboxes}}" wx:key="id"
+              data-id="{{item.id}}" bindtap="onTogglePeriodCheck">
+          <view class="check-box {{item.checked ? 'check-box-on' : ''}}">
+            <text wx:if="{{item.checked}}" class="check-tick">✓</text>
+          </view>
+          <text class="branch-check-name">{{item.name}}</text>
+        </view>
+      </scroll-view>
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onClearPeriodFilter">清除</button>
+        <button class="btn btn-primary" style="flex:1;" bindtap="onClosePeriodSheet">确定</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 支部多选弹窗 -->
+  <view wx:if="{{showBranchSheet}}" class="modal-mask" bindtap="onCloseBranchSheet">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">选择支部（可多选）</view>
+      <scroll-view scroll-y style="max-height:50vh;">
+        <view class="branch-check-item" wx:for="{{branchCheckboxes}}" wx:key="id"
+              data-id="{{item.id}}" bindtap="onToggleBranchCheck">
+          <view class="check-box {{item.checked ? 'check-box-on' : ''}}">
+            <text wx:if="{{item.checked}}" class="check-tick">✓</text>
+          </view>
+          <text class="branch-check-name">{{item.name}}</text>
+        </view>
+      </scroll-view>
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onClearBranchFilter">清除</button>
+        <button class="btn btn-primary" style="flex:1;" bindtap="onCloseBranchSheet">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

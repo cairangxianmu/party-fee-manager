@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="logo-area">
+    <image class="logo-img" src="/images/party-emblem.png" mode="aspectFit"></image>
+    <view class="logo-title">
+      <view class="logo-title-line">党费缴纳管理系统</view>
+    </view>
+    <view class="logo-sub">管理员登录</view>
+  </view>
+
+  <view class="form-card">
+    <view class="form-item">
+      <view class="form-label required">用户名</view>
+      <input class="form-input" placeholder="请输入用户名"
+             value="{{username}}" bindinput="onUsernameInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label required">密码</view>
+      <input class="form-input" placeholder="请输入密码" password
+             value="{{password}}" bindinput="onPasswordInput" />
+    </view>
+
+    <button class="btn btn-primary login-btn"
+            bindtap="onLogin" disabled="{{loading}}" loading="{{loading}}">
+      {{loading ? '登录中…' : '登 录'}}
+    </button>
+  </view>
+
+  <view class="hint">默认超级管理员：admin / admin123</view>
+</view>

@@ -1,0 +1,119 @@
+<view class="container">
+  <view class="page-header">
+    <view class="page-header-title">成员管理</view>
+    <view class="page-header-sub">{{isSuper ? '全院成员' : '本支部成员'}}</view>
+  </view>
+
+  <!-- 操作栏 -->
+  <view class="toolbar">
+    <button class="btn btn-primary btn-sm" bindtap="onAddMember">+ 新增</button>
+    <button class="btn btn-default btn-sm" bindtap="onImport">导入Excel</button>
+    <button class="btn btn-default btn-sm" bindtap="onDownloadTemplate">下载模板</button>
+    <view class="member-count text-gray text-sm">共 {{members.length}} 人</view>
+  </view>
+
+  <!-- 成员列表 -->
+  <view class="card" wx:if="{{members.length > 0}}">
+    <view class="member-item" wx:for="{{members}}" wx:key="id">
+      <view class="member-main">
+        <view class="member-name text-bold">{{item.name}}</view>
+        <view class="member-meta text-gray text-sm">{{item.member_no}} · {{item.phone}}</view>
+        <view class="member-meta text-gray text-sm">
+          {{item.identity}} · {{item.branch_name || '本支部'}} · ¥{{item.amount_fmt}}/期
+        </view>
+        <view class="member-status-row">
+          <view class="tag {{item.status === 'active' ? 'tag-paid' : item.status === 'suspended' ? 'tag-suspended' : 'tag-transferred'}}">
+            {{item.status === 'active' ? '正常' : item.status === 'suspended' ? '停缴' : '已转出'}}
+          </view>
+          <view wx:if="{{item.openid}}" class="tag tag-paid" style="margin-left:8rpx;">已绑定</view>
+          <view wx:else class="tag tag-unpaid" style="margin-left:8rpx;">未绑定</view>
+        </view>
+      </view>
+      <view class="member-actions">
+        <button class="btn btn-default btn-sm" data-member="{{item}}" bindtap="onEdit">编辑</button>
+        <button wx:if="{{item.openid}}" class="btn btn-danger btn-sm mt4"
+                data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onUnbind">解绑</button>
+        <button class="btn btn-danger btn-sm mt4"
+                data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onDelete">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">👥</view>
+    <text>暂无成员</text>
+  </view>
+
+  <!-- 编辑/新增弹窗 -->
+  <view wx:if="{{showModal}}" class="modal-mask" bindtap="onCloseModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">{{isNew ? '新增成员' : '编辑成员'}}</view>
+
+      <scroll-view scroll-y style="max-height:65vh;">
+        <view class="form-item">
+          <view class="form-label required">姓名</view>
+          <input class="form-input" value="{{form.name}}" placeholder="请输入姓名"
+                 data-field="name" bindinput="onFormInput"/>
+        </view>
+        <view class="form-item">
+          <view class="form-label required">工号/学号</view>
+          <input class="form-input" value="{{form.member_no}}" placeholder="唯一编号"
+                 data-field="member_no" bindinput="onFormInput"/>
+        </view>
+        <view class="form-item">
+          <view class="form-label required">手机号</view>
+          <input class="form-input" value="{{form.phone}}" placeholder="11位手机号"
+                 type="number" data-field="phone" bindinput="onFormInput"/>
+        </view>
+        <view class="form-item">
+          <view class="form-label required">党员身份</view>
+          <picker mode="selector" range="{{identityOptions}}" bindchange="onIdentityChange">
+            <view class="form-input picker-val">{{form.identity || '请选择'}} ▾</view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <view class="form-label">身份</view>
+          <picker mode="selector" range="{{personTypeOptions}}" bindchange="onPersonTypeChange">
+            <view class="form-input picker-val">{{form.person_type || '请选择（可选）'}} ▾</view>
+          </picker>
+        </view>
+        <!-- 超级管理员可选支部；支部管理员只读显示 -->
+        <view wx:if="{{isSuper}}" class="form-item">
+          <view class="form-label required">所在支部</view>
+          <picker mode="selector" range="{{branches}}" range-key="name" bindchange="onBranchChange">
+            <view class="form-input picker-val">
+              {{form.branchName || '请选择支部'}} ▾
+            </view>
+          </picker>
+        </view>
+        <view wx:else class="form-item">
+          <view class="form-label">所在支部</view>
+          <view class="form-input" style="color:#888;">{{form.branchName || form.branch_name || '本支部'}}</view>
+        </view>
+        <view class="form-item">
+          <view class="form-label required">应缴金额(元)</view>
+          <input class="form-input" value="{{form.amount}}" placeholder="如：5"
+                 type="digit" data-field="amount" bindinput="onFormInput"/>
+        </view>
+        <view wx:if="{{!isNew}}" class="form-item">
+          <view class="form-label">状态</view>
+          <picker mode="selector" range="{{statusLabels}}" bindchange="onStatusChange">
+            <view class="form-input picker-val">
+              {{form.status === 'active' ? '正常' : form.status === 'suspended' ? '停缴' : '已转出'}} ▾
+            </view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <view class="form-label">备注</view>
+          <input class="form-input" value="{{form.notes}}" placeholder="可留空"
+                 data-field="notes" bindinput="onFormInput"/>
+        </view>
+      </scroll-view>
+
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onCloseModal">取消</button>
+        <button class="btn btn-primary" style="flex:1;" bindtap="onSave">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,66 @@
+<view class="container">
+  <view class="page-header">
+    <view class="page-header-title">期数管理</view>
+    <view class="page-header-sub">超级管理员 · 新建/删除缴费期数</view>
+  </view>
+
+  <view class="toolbar">
+    <button class="btn btn-primary btn-sm" bindtap="onAdd">+ 新建期数</button>
+    <view class="text-gray text-sm" style="align-self:center;">共 {{periods.length}} 个期数</view>
+  </view>
+
+  <view class="card" wx:if="{{periods.length > 0}}">
+    <view class="period-item" wx:for="{{periods}}" wx:key="id">
+      <view class="period-info">
+        <view class="period-name text-bold">{{item.name}}</view>
+        <view class="period-date text-gray text-sm">创建时间：{{item.created_at}}</view>
+      </view>
+      <button class="btn btn-danger btn-sm"
+              data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onDelete">删除</button>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">📅</view>
+    <text>暂无期数，点击新建</text>
+  </view>
+
+  <view class="tip-card">
+    <view class="tip-title">📌 说明</view>
+    <view class="tip-text">新建期数后，系统将自动为所有「正常」状态成员生成本期缴费记录。</view>
+    <view class="tip-text" style="margin-top:8rpx;">删除期数将同时删除该期所有缴费记录，请谨慎操作。</view>
+  </view>
+
+  <!-- 新建弹窗 -->
+  <view wx:if="{{showModal}}" class="modal-mask" bindtap="onCloseModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">新建缴费期数</view>
+
+      <view class="form-item">
+        <view class="form-label required">年份</view>
+        <picker mode="selector" range="{{yearList}}" value="{{yearIndex}}" bindchange="onYearChange">
+          <view class="form-input picker-val">{{selectedYear}} ▾</view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label required">月份（可多选）</view>
+        <view class="month-grid">
+          <view class="month-item {{selectedMonths[item] ? 'month-selected' : ''}}"
+                wx:for="{{monthList}}" wx:for-item="item" wx:key="*this"
+                data-month="{{item}}" bindtap="onToggleMonth">{{item}}月</view>
+        </view>
+      </view>
+
+      <view wx:if="{{previewNames.length > 0}}" class="preview-box">
+        <view class="preview-title">将创建以下 {{previewNames.length}} 个期数：</view>
+        <view class="preview-item" wx:for="{{previewNames}}" wx:key="*this">· {{item}}</view>
+      </view>
+
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onCloseModal">取消</button>
+        <button class="btn btn-primary" style="flex:1;" bindtap="onCreate">创建</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,173 @@
+.nav-row {
+  display: flex;
+  justify-content: space-around;
+  padding: 24rpx 8rpx;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.nav-item:active { opacity: 0.65; transform: scale(0.96); }
+.nav-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
+  background: #fdf2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-bottom: 10rpx;
+}
+.nav-label {
+  font-size: 22rpx;
+  color: #444;
+  position: relative;
+  white-space: nowrap;
+}
+.nav-badge {
+  display: inline-block;
+  min-width: 28rpx;
+  height: 28rpx;
+  line-height: 28rpx;
+  padding: 0 8rpx;
+  margin-left: 4rpx;
+  border-radius: 14rpx;
+  background: #c0292b;
+  color: #fff;
+  font-size: 20rpx;
+  text-align: center;
+}
+
+.filter-row {
+  display: flex;
+  gap: 20rpx;
+  padding: 22rpx 28rpx;
+  flex-wrap: wrap;
+}
+.filter-item { display: flex; align-items: center; gap: 12rpx; flex: 1; }
+.filter-label { font-size: 26rpx; color: #666; white-space: nowrap; }
+.picker-box {
+  flex: 1;
+  height: 64rpx;
+  background: #f7f7f7;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+.picker-arrow { font-size: 22rpx; color: #aaa; }
+
+.action-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+.action-btn { flex: 1; }
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.detail-item:last-child { border-bottom: none; }
+
+.detail-left { flex: 1; }
+.detail-name { font-size: 30rpx; font-weight: 600; color: #222; }
+.detail-meta { font-size: 24rpx; color: #999; margin-top: 6rpx; }
+.detail-branch { margin-top: 4rpx; }
+
+.detail-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+  min-width: 120rpx;
+}
+.detail-amount { font-size: 28rpx; font-weight: 600; color: #333; }
+
+.mt8 { margin-top: 8rpx; }
+
+/* 饼图卡片 */
+.chart-card { padding: 24rpx 28rpx; }
+.chart-title { font-size: 28rpx; font-weight: 700; color: #222; margin-bottom: 20rpx; text-align: center; }
+
+.donut-canvas {
+  width: 260rpx; height: 260rpx;
+  display: block; margin: 0 auto 20rpx;
+}
+
+/* 图例徽标（已缴/未缴色块） */
+.donut-legend-badges {
+  display: flex; justify-content: center; gap: 32rpx; margin-bottom: 20rpx;
+}
+.legend-badge { display: flex; align-items: center; gap: 8rpx; }
+.legend-dot-paid  { width: 20rpx; height: 20rpx; border-radius: 4rpx; background: #27ae60; }
+.legend-dot-unpaid{ width: 20rpx; height: 20rpx; border-radius: 4rpx; background: #e74c3c; }
+.legend-text { font-size: 24rpx; color: #555; }
+
+/* 各支部明细列表 */
+.donut-legend-list { margin-top: 4rpx; }
+.donut-legend-item {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6rpx 10rpx;
+  padding: 10rpx 0; border-bottom: 1rpx solid #f5f5f5;
+}
+.donut-legend-item:last-child { border-bottom: none; }
+.dli-name { width: 100%; font-size: 24rpx; color: #444; word-break: break-all; }
+.dli-bar-wrap { flex: 1; height: 16rpx; background: #f0f0f0; border-radius: 8rpx; overflow: hidden; }
+.dli-bar { height: 100%; background: #27ae60; border-radius: 8rpx; min-width: 2rpx; }
+.dli-stat { width: 148rpx; font-size: 22rpx; color: #888; flex-shrink: 0; text-align: right; }
+
+/* 名单筛选标题行 */
+.list-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16rpx;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+.list-title { font-size: 30rpx; font-weight: 700; color: #222; }
+.status-tabs { display: flex; gap: 8rpx; }
+.status-tab {
+  padding: 10rpx 22rpx; border-radius: 24rpx;
+  font-size: 22rpx; color: #666;
+  background: #f2f2f2;
+}
+.status-tab:active { opacity: 0.7; }
+.tab-active { background: #c0292b; color: #fff; font-weight: 600; }
+
+
+/* 支部多选弹窗 */
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: flex-end; z-index: 100;
+}
+.modal-box {
+  width: 100%; background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 32rpx 28rpx 48rpx;
+}
+.modal-title { font-size: 32rpx; font-weight: 700; color: #222; margin-bottom: 24rpx; text-align: center; }
+.modal-footer { display: flex; gap: 20rpx; margin-top: 24rpx; }
+
+.branch-check-item {
+  display: flex; align-items: center; gap: 20rpx;
+  padding: 22rpx 0; border-bottom: 1rpx solid #f0f0f0;
+}
+.branch-check-item:last-child { border-bottom: none; }
+.check-box {
+  width: 44rpx; height: 44rpx; border-radius: 8rpx;
+  border: 2rpx solid #ddd; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.check-box-on { background: #c0292b; border-color: #c0292b; }
+.check-tick { font-size: 26rpx; color: #fff; font-weight: 700; }
+.branch-check-name { font-size: 28rpx; color: #333; }

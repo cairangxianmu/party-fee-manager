@@ -1,0 +1,90 @@
+<view class="container">
+  <view class="page-header">
+    <view class="page-header-title">信息审核</view>
+    <view class="page-header-sub">审核党员提交的信息修改申请</view>
+  </view>
+
+  <!-- 状态筛选 -->
+  <view class="status-tabs">
+    <view class="status-tab {{filter === 'pending' ? 'tab-active' : ''}}"
+          data-val="pending" bindtap="onFilterChange">待审核</view>
+    <view class="status-tab {{filter === 'approved' ? 'tab-active' : ''}}"
+          data-val="approved" bindtap="onFilterChange">已批准</view>
+    <view class="status-tab {{filter === 'rejected' ? 'tab-active' : ''}}"
+          data-val="rejected" bindtap="onFilterChange">已驳回</view>
+    <view class="status-tab {{filter === 'all' ? 'tab-active' : ''}}"
+          data-val="all" bindtap="onFilterChange">全部</view>
+  </view>
+
+  <!-- 列表 -->
+  <view wx:if="{{list.length > 0}}">
+    <view class="req-card" wx:for="{{list}}" wx:key="id">
+      <view class="req-head">
+        <view class="req-name text-bold">{{item.member_name}}</view>
+        <view class="tag {{item.status === 'pending' ? 'tag-unpaid' : item.status === 'approved' ? 'tag-paid' : 'tag-suspended'}}">
+          {{item.status === 'pending' ? '待审核' : item.status === 'approved' ? '已批准' : '已驳回'}}
+        </view>
+      </view>
+      <view class="req-meta text-gray text-sm">{{item.member_no}} · {{item.branch_name || '—'}}</view>
+
+      <!-- 变更字段列表 -->
+      <view class="change-block">
+        <view class="change-row" wx:for="{{item.changeItems}}" wx:key="label" wx:for-item="chg">
+          <view class="change-label text-gray">{{chg.label}}</view>
+          <view class="change-vals">
+            <text class="change-old">{{chg.oldVal}}</text>
+            <text class="change-arrow"> → </text>
+            <text class="change-new text-red text-bold">{{chg.newVal}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 修改说明 -->
+      <view wx:if="{{item.note}}" class="req-note">
+        <text class="req-note-label">修改说明：</text>{{item.note}}
+      </view>
+
+      <view class="req-row">
+        <view class="req-label">提交时间</view>
+        <view class="req-val text-gray text-sm">{{item.created_at}}</view>
+      </view>
+      <view wx:if="{{item.reviewed_at}}" class="req-row">
+        <view class="req-label">审核时间</view>
+        <view class="req-val text-gray text-sm">{{item.reviewed_at}}</view>
+      </view>
+      <view wx:if="{{item.status === 'rejected' && item.reject_reason}}" class="req-reason">
+        驳回原因：{{item.reject_reason}}
+      </view>
+
+      <view wx:if="{{item.status === 'pending'}}" class="req-actions">
+        <button class="btn btn-danger btn-sm" style="flex:1;"
+                data-id="{{item.id}}" bindtap="onReject">驳回</button>
+        <button class="btn btn-primary btn-sm" style="flex:1;"
+                data-id="{{item.id}}" data-name="{{item.member_name}}"
+                bindtap="onApprove">批准</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{!loading}}" class="empty">
+    <view class="empty-icon">📭</view>
+    <text>暂无申请记录</text>
+  </view>
+
+  <!-- 驳回原因弹窗 -->
+  <view wx:if="{{showReject}}" class="modal-mask" bindtap="onCloseReject">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">驳回申请</view>
+      <view class="form-item">
+        <view class="form-label required">驳回原因</view>
+        <textarea class="form-textarea" value="{{rejectReason}}" placeholder="请简要说明驳回原因"
+                  maxlength="100" bindinput="onReasonInput" focus></textarea>
+      </view>
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onCloseReject">取消</button>
+        <button class="btn btn-danger" style="flex:1;"
+                loading="{{submitting}}" bindtap="onConfirmReject">确认驳回</button>
+      </view>
+    </view>
+  </view>
+</view>

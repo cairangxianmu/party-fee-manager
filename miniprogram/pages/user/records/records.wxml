@@ -1,0 +1,132 @@
+<view class="container">
+  <!-- 顶部个人信息 -->
+  <view class="profile-card">
+    <view class="profile-avatar">{{memberName ? memberName[0] : '党'}}</view>
+    <view class="profile-info">
+      <view class="profile-name text-bold">{{memberName || '党员'}}</view>
+      <view class="profile-sub text-gray text-sm">党费缴纳记录</view>
+    </view>
+    <view class="profile-actions">
+      <view class="profile-action-btn" bindtap="onChangeInfo">修改信息</view>
+      <view class="profile-action-btn" bindtap="goBack">返回首页</view>
+    </view>
+  </view>
+
+  <!-- 信息修改申请状态 -->
+  <view wx:if="{{infoRequest && infoRequest.status === 'pending'}}" class="phone-req-banner phone-req-pending">
+    <view class="phone-req-title">信息修改申请审核中</view>
+    <view class="phone-req-sub text-sm">提交于 {{infoRequest.created_at}}，请等待管理员审核</view>
+  </view>
+  <view wx:elif="{{infoRequest && infoRequest.status === 'rejected'}}" class="phone-req-banner phone-req-rejected">
+    <view class="phone-req-title">上次信息修改申请被驳回</view>
+    <view class="phone-req-sub text-sm">原因：{{infoRequest.reject_reason || '未说明'}}，可重新提交</view>
+  </view>
+
+  <!-- 未缴提示 -->
+  <view wx:if="{{unpaidCount > 0}}" class="unpaid-banner" bindtap="goPay">
+    <view class="banner-left">
+      <view class="banner-icon">💳</view>
+      <view>
+        <view class="banner-title">您有 {{unpaidCount}} 期未缴党费</view>
+        <view class="banner-sub text-sm">点击前往缴费</view>
+      </view>
+    </view>
+    <view class="banner-arrow">›</view>
+  </view>
+
+  <!-- 缴费记录 -->
+  <view class="section-title">缴费历史</view>
+
+  <view wx:if="{{records.length > 0}}">
+    <view class="record-card" wx:for="{{records}}" wx:key="id">
+      <view class="record-period">{{item.period_name}}</view>
+      <view class="record-row">
+        <view class="record-amount">¥ {{item.amount_fmt}}</view>
+        <view class="tag {{item.paid ? 'tag-paid' : 'tag-unpaid'}}">
+          {{item.paid ? '已缴' : '未缴'}}
+        </view>
+      </view>
+      <view wx:if="{{item.paid}}" class="record-meta text-gray text-sm">
+        缴费时间：{{item.paid_at || '–'}}
+        <text wx:if="{{item.pay_type}}">
+          · {{item.pay_type === 'manual' ? '手动确认' : item.pay_type === 'wxpay' ? '微信支付' : '测试支付'}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">📋</view>
+    <text>暂无缴费记录</text>
+  </view>
+
+  <!-- 立即缴费入口 -->
+  <view style="margin-top:32rpx;" wx:if="{{unpaidCount > 0}}">
+    <button class="btn btn-primary" bindtap="goPay">立即缴费</button>
+  </view>
+
+  <!-- 修改信息弹窗 -->
+  <view wx:if="{{showInfoModal}}" class="modal-mask" bindtap="onCloseInfoModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">修改个人信息</view>
+
+      <scroll-view scroll-y style="max-height:58vh;overflow:hidden;">
+        <!-- 手机号 -->
+        <view class="form-item">
+          <view class="form-label">手机号</view>
+          <input class="form-input" type="number" maxlength="11"
+                 value="{{formPhone}}" placeholder="修改则填写新11位手机号"
+                 bindinput="onPhoneInput" />
+        </view>
+
+        <!-- 党员身份 -->
+        <view class="form-item">
+          <view class="form-label">党员身份</view>
+          <picker mode="selector" range="{{identityList}}" value="{{formIdentityIndex}}"
+                  bindchange="onIdentityChange">
+            <view class="info-picker-box">
+              <text>{{identityList[formIdentityIndex]}}</text>
+              <text class="picker-arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 所在支部 -->
+        <view class="form-item">
+          <view class="form-label">所在支部</view>
+          <picker mode="selector" range="{{branches}}" range-key="name" value="{{formBranchIndex}}"
+                  bindchange="onBranchChange">
+            <view class="info-picker-box">
+              <text>{{branches[formBranchIndex] ? branches[formBranchIndex].name : '—'}}</text>
+              <text class="picker-arrow">▾</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 应缴金额 -->
+        <view class="form-item">
+          <view class="form-label">应缴金额（元）</view>
+          <input class="form-input" type="digit"
+                 value="{{formAmount}}" placeholder="修改则填写新金额"
+                 bindinput="onAmountInput" />
+        </view>
+
+        <!-- 修改说明（必填） -->
+        <view class="form-item">
+          <view class="form-label required">修改说明</view>
+          <textarea class="form-textarea" value="{{formNote}}"
+                    placeholder="请说明修改原因，供管理员审核参考"
+                    maxlength="200" bindinput="onNoteInput" auto-height></textarea>
+        </view>
+
+        <view class="form-tip text-gray text-sm">仅修改需变更的信息，其余保持不变即可</view>
+      </scroll-view>
+
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onCloseInfoModal">取消</button>
+        <button class="btn btn-primary" style="flex:1;"
+                loading="{{infoChanging}}" bindtap="onConfirmChangeInfo">提交申请</button>
+      </view>
+    </view>
+  </view>
+</view>

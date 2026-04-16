@@ -1,0 +1,53 @@
+<view class="container">
+  <view class="page-header">
+    <view class="page-header-title">支部管理</view>
+    <view class="page-header-sub">超级管理员 · 管理全院支部信息</view>
+  </view>
+
+  <view class="toolbar">
+    <button class="btn btn-primary btn-sm" bindtap="onAdd">+ 新建支部</button>
+    <view class="text-gray text-sm" style="align-self:center;">共 {{branches.length}} 个支部</view>
+  </view>
+
+  <view class="card" wx:if="{{branches.length > 0}}">
+    <view class="branch-item" wx:for="{{branches}}" wx:key="id">
+      <view class="branch-info">
+        <view class="branch-name text-bold">{{item.name}}</view>
+        <view class="branch-leader text-gray text-sm">
+          负责人：{{item.leader || '未设置'}}
+        </view>
+      </view>
+      <view class="branch-actions">
+        <button class="btn btn-default btn-sm" data-branch="{{item}}" bindtap="onEdit">编辑</button>
+        <button class="btn btn-danger btn-sm mt4"
+                data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onDelete">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">🏛️</view>
+    <text>暂无支部，点击新建</text>
+  </view>
+
+  <!-- 新建/编辑弹窗 -->
+  <view wx:if="{{showModal}}" class="modal-mask" bindtap="onCloseModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">{{isNew ? '新建支部' : '编辑支部'}}</view>
+      <view class="form-item">
+        <view class="form-label required">支部名称</view>
+        <input class="form-input" value="{{form.name}}" placeholder="请输入支部名称"
+               bindinput="onNameInput" />
+      </view>
+      <view class="form-item">
+        <view class="form-label">负责人</view>
+        <input class="form-input" value="{{form.leader}}" placeholder="负责人姓名（可选）"
+               bindinput="onLeaderInput" />
+      </view>
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onCloseModal">取消</button>
+        <button class="btn btn-primary" style="flex:1;" bindtap="onSave">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

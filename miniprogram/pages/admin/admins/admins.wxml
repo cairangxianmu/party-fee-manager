@@ -1,0 +1,106 @@
+<view class="container">
+  <view class="page-header">
+    <view class="page-header-title">管理员账号</view>
+    <view class="page-header-sub">超级管理员 · 账号创建与权限管理</view>
+  </view>
+
+  <view class="toolbar">
+    <button class="btn btn-primary btn-sm" bindtap="onAdd">+ 新建账号</button>
+    <view class="text-gray text-sm" style="align-self:center;">共 {{admins.length}} 个账号</view>
+  </view>
+
+  <view class="card" wx:if="{{admins.length > 0}}">
+    <view class="admin-item" wx:for="{{admins}}" wx:key="id">
+      <view class="admin-info">
+        <view class="admin-name text-bold">{{item.username}}</view>
+        <view class="admin-role text-sm">
+          <view class="tag {{item.role === 'super' ? 'tag-paid' : 'tag-suspended'}}">
+            {{item.role === 'super' ? '超级管理员' : '普通管理员'}}
+          </view>
+          <text wx:if="{{item.branch_name}}" class="text-gray"> · {{item.branch_name}}</text>
+        </view>
+        <view class="text-sm" style="margin-top:6rpx;">
+          <text class="{{item.is_active ? 'text-green' : 'text-red'}}">
+            {{item.is_active ? '● 已启用' : '● 已禁用'}}
+          </text>
+        </view>
+      </view>
+      <view class="admin-actions">
+        <button class="btn btn-default btn-sm" data-admin="{{item}}" bindtap="onEdit">编辑</button>
+        <button class="btn btn-default btn-sm mt4"
+                data-id="{{item.id}}" data-username="{{item.username}}" bindtap="onViewLogs">日志</button>
+        <button class="btn btn-danger btn-sm mt4"
+                data-id="{{item.id}}" data-username="{{item.username}}" bindtap="onDelete">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="empty">
+    <view class="empty-icon">🛡️</view>
+    <text>暂无管理员账号</text>
+  </view>
+
+  <!-- 编辑弹窗 -->
+  <view wx:if="{{showModal}}" class="modal-mask" bindtap="onCloseModal">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">{{isNew ? '新建管理员' : '编辑管理员'}}</view>
+      <view class="form-item">
+        <view class="form-label required">用户名</view>
+        <input class="form-input" value="{{form.username}}" placeholder="登录用户名"
+               data-field="username" bindinput="onFormInput"/>
+      </view>
+      <view class="form-item">
+        <view class="form-label {{isNew ? 'required' : ''}}">
+          密码{{isNew ? '' : '（留空不修改）'}}
+        </view>
+        <input class="form-input" value="{{form.password}}" placeholder="{{isNew ? '请设置密码' : '留空则不修改'}}"
+               password data-field="password" bindinput="onFormInput"/>
+      </view>
+      <view class="form-item">
+        <view class="form-label required">角色</view>
+        <picker mode="selector" range="{{roleOptions}}" bindchange="onRoleChange">
+          <view class="form-input picker-val">
+            {{form.role === 'super' ? '超级管理员' : '普通管理员'}} ▾
+          </view>
+        </picker>
+      </view>
+      <view wx:if="{{form.role === 'branch'}}" class="form-item">
+        <view class="form-label required">绑定支部</view>
+        <picker mode="selector" range="{{branches}}" range-key="name" bindchange="onBranchChange">
+          <view class="form-input picker-val">
+            {{form.branch_name || '请选择支部'}} ▾
+          </view>
+        </picker>
+      </view>
+      <view wx:if="{{!isNew}}" class="form-item">
+        <view class="form-label">账号状态</view>
+        <switch checked="{{form.is_active === 1}}" color="#c0292b" bindchange="onActiveChange"/>
+      </view>
+      <view class="modal-footer">
+        <button class="btn btn-default" style="flex:1;" bindtap="onCloseModal">取消</button>
+        <button class="btn btn-primary" style="flex:1;" bindtap="onSave">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日志弹窗 -->
+  <view wx:if="{{showLogs}}" class="modal-mask" bindtap="onCloseLogs">
+    <view class="modal-box" catchtap="noop">
+      <view class="modal-title">操作日志 · {{logsAdmin}}</view>
+      <scroll-view scroll-y style="max-height:60vh;">
+        <view wx:if="{{logs.length > 0}}">
+          <view class="log-item" wx:for="{{logs}}" wx:key="id">
+            <view class="log-action text-bold">{{item.action}}</view>
+            <view class="log-detail text-gray text-sm">{{item.detail}}</view>
+            <view class="log-time text-gray text-sm">{{item.created_at}}</view>
+          </view>
+        </view>
+        <view wx:else class="empty">
+          <view class="empty-icon">📋</view>
+          <text>暂无操作日志</text>
+        </view>
+      </scroll-view>
+      <button class="btn btn-default" style="margin-top:20rpx;" bindtap="onCloseLogs">关闭</button>
+    </view>
+  </view>
+</view>

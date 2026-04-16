@@ -1,0 +1,38 @@
+<view class="container">
+  <view class="page-header">
+    <view class="page-header-title">在线缴费</view>
+    <view class="page-header-sub">{{memberName}} · 未缴期数列表</view>
+  </view>
+
+  <!-- 未缴列表 -->
+  <view wx:if="{{items.length > 0}}">
+    <view class="pay-card" wx:for="{{items}}" wx:key="payment_id">
+      <view class="pay-info">
+        <view class="pay-period text-bold">{{item.period_name}}</view>
+        <view class="pay-amount">¥ <text class="amount-num">{{item.amount_fmt}}</text></view>
+      </view>
+      <button class="btn btn-primary btn-pay"
+              data-payment-id="{{item.payment_id}}"
+              data-amount="{{item.amount}}"
+              data-period-name="{{item.period_name}}"
+              bindtap="onPay"
+              disabled="{{paying && payingId === item.payment_id}}"
+              loading="{{paying && payingId === item.payment_id}}">
+        {{paying && payingId === item.payment_id ? '支付中…' : '立即缴纳'}}
+      </button>
+    </view>
+  </view>
+
+  <view wx:else class="all-paid-card">
+    <view class="all-paid-icon">✅</view>
+    <view class="all-paid-title">党费已全部缴清</view>
+    <view class="all-paid-sub text-gray text-sm">感谢您按时缴纳党费</view>
+  </view>
+
+  <view class="tip-card">
+    <view class="tip-title">💡 缴费说明</view>
+    <view class="tip-text">· 缴费金额以管理员设定为准，不可修改</view>
+    <view class="tip-text">· 支付成功后自动标记为已缴，实时生效</view>
+    <view class="tip-text">· 如有疑问请联系所在支部管理员</view>
+  </view>
+</view>

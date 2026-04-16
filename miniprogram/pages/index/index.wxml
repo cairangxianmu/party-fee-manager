@@ -1,0 +1,33 @@
+<view class="page">
+  <!-- 顶部党徽区域 -->
+  <view class="hero">
+    <image class="emblem" src="/images/party-emblem.png" mode="aspectFit"></image>
+    <view class="hero-title">
+      <view class="hero-title-line">党费缴纳管理系统</view>
+    </view>
+    <view class="hero-sub">廉洁自律 · 服务党员</view>
+  </view>
+
+  <!-- 功能入口 -->
+  <view class="entry-section">
+    <view class="entry-card" bindtap="goUserEntry">
+      <view class="entry-icon entry-icon-user">💰</view>
+      <view class="entry-info">
+        <view class="entry-title">我要缴费</view>
+        <view class="entry-desc">党员身份绑定、在线缴纳党费</view>
+      </view>
+      <view class="entry-arrow">›</view>
+    </view>
+
+    <view class="entry-card" bindtap="goAdminLogin">
+      <view class="entry-icon entry-icon-admin">🛡️</view>
+      <view class="entry-info">
+        <view class="entry-title">管理员登录</view>
+        <view class="entry-desc">支部/全院缴费管理后台</view>
+      </view>
+      <view class="entry-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="footer">仅限内部党员使用</view>
+</view>
